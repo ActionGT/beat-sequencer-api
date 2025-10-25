@@ -42,7 +42,8 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable()) // (A) Disable CSRF for our stateless API
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/health").permitAll() // (B) Make auth/health public
+                        // --- THIS IS THE UPDATED LINE ---
+                        .requestMatchers("/api/auth/**", "/api/health", "/api/beats/public/**").permitAll()
                         .anyRequest().authenticated() // (C) Secure everything else
                 )
                 .authenticationProvider(authenticationProvider()) // (D) Set our custom auth provider

@@ -3,6 +3,7 @@ package com.garytracey.beat_sequencer.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +22,9 @@ public class Beat {
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String pattern;
+
+    @Column(unique = true)
+    private UUID shareId;
 
     // --- Relationship ---
     @ManyToOne(fetch = FetchType.LAZY) // Many beats can belong to one user

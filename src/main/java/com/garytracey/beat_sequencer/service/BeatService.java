@@ -7,7 +7,9 @@ import com.garytracey.beat_sequencer.model.User;
 import com.garytracey.beat_sequencer.repository.BeatRepository;
 import com.garytracey.beat_sequencer.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Import this!
+import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,5 +52,36 @@ public class BeatService {
         return userBeats.stream()
                 .map(beat -> new BeatResponseDto(beat.getId(), beat.getName(), beat.getPattern()))
                 .collect(Collectors.toList());
+    }
+    @Transactional
+    public String generateShareId(Long beatId, SecurityUser securityUser) {
+        // 1. Find the beat by its primary ID
+        Beat beat = beatRepository.findById(beatId)
+                .orElseThrow(() -> new RuntimeException("Beat not found with id: " + beatId));
+
+        // 2. SECURITY CHECK: Ensure the logged-in user owns this beat
+        if (!beat.getUser().getUsername().equals(securityUser.getUsername())) {
+            throw new AccessDeniedException("You do not have permission to share this beat.");
+        }
+
+        // 3. Generate a shareId if it doesn't already have one
+        if (beat.getShareId() == null) {
+            beat.setShareId(UUID.randomUUID());
+            beatRepository.save(beat); // Save the updated beat
+        }
+
+        // 4. Return the shareable ID as a string
+        return beat.getShareId().toString();
+    }
+    // This is the method for our public (non-authenticated) endpoint
+    @Transactional(readOnly = true)
+    public BeatResponseDto getPublicBeat(UUID shareId) {
+        // 1. Find the beat in the DB using the new repository method
+        Beat beat = beatRepository.findByShareId(shareId)
+                .orElseThrow(() -> new RuntimeException("Beat not found with shareId: " + shareId));
+
+        // 2. Convert the Beat entity to our safe DTO and return it
+        // (This runs inside the transaction, so the @Lob is loaded safely)
+        return new BeatResponseDto(beat.getId(), beat.getName(), beat.getPattern());
     }
 }
