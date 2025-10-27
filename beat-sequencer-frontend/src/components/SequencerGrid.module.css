@@ -1,15 +1,20 @@
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(16, 1fr); /* 16 columns for 16 steps */
-  gap: 5px; /* Spacing between cells */padding: 1rem;
+  grid-template-columns: repeat(16, 1fr);
+  /* 16 columns for 16 steps */
+  gap: 5px;
+  /* Spacing between cells */
+  padding: 1rem;
   background-color: #242424;
   border-radius: 8px;
   width: fit-content;
-  margin: 1rem auto; /* Center the grid */
+  margin: 1rem auto;
+  /* Center the grid */
 }
 
 .row {
-  display: contents; /* Makes the row itself invisible in the grid */
+  display: contents;
+  /* Makes the row itself invisible in the grid */
 }
 
 .cell {
@@ -22,7 +27,8 @@
   transition: background-color 0.1s;
 }
 
-/* This is the style we'll use later for an "active" cell */.cell.active {
+/* This is the style we'll use later for an "active" cell */
+.cell.active {
   background-color: #00aaff;
   box-shadow: 0 0 10px #00aaff;
 }
