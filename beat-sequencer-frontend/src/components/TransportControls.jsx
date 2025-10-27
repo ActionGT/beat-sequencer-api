@@ -1,12 +1,14 @@
 import React from 'react';
 import styles from './TransportControls.module.css'; // Import the styles
 
-function TransportControls() {
+function TransportControls({ isPlaying, onPlayPause, tempo, onTempoChange}) {
   return (
     <div className={styles.controlsContainer}>
-      {/* Play/Pause Button */}
-      <button className={styles.playButton}>
-        Play
+       {/* 2. Call onPlayPause when clicked */}
+      <button className={styles.playButton}
+          onClick={onPlayPause}  
+      >
+      {isPlaying ? 'Pause' : 'Play'}
       </button> {/* <-- This is the corrected line */}
 
       {/* Tempo Slider */}
@@ -17,7 +19,8 @@ function TransportControls() {
           id="tempo"
           min="60"
           max="180"
-          defaultValue="120"
+          value={tempo}
+          onChange={(e) => onTempoChange(e.target.value)}
         />
       </div>
     </div>
