@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 @Configuration
 @EnableWebSecurity // Explicitly enables web security
@@ -38,16 +40,32 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable()) // (A) Disable CSRF for our stateless API
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. Enable CORS (Crucial fix!)
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+
+                // 2. Disable CSRF (Common for simple REST APIs)
+                .csrf(csrf -> csrf.disable())
+
+                // 3. Define authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // --- THIS IS THE UPDATED LINE ---
-                        .requestMatchers("/api/auth/**", "/api/health", "/api/beats/public/**").permitAll()
-                        .anyRequest().authenticated() // (C) Secure everything else
+                        .requestMatchers("/api/auth/**", "/api/health").permitAll()
+                        // Allow access to the specific public endpoint structure you have
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/beats/public/**").permitAll()
+                        // Allow OPTIONS (for CORS)
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        // Lock everything else down
+                        .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider()) // (D) Set our custom auth provider
-                .httpBasic(Customizer.withDefaults()) // (E) Enable HTTP Basic Auth for Postman
-                .build();
+                // 4. Use Basic Auth (simplest for now)
+                .httpBasic(org.springframework.security.config.Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }

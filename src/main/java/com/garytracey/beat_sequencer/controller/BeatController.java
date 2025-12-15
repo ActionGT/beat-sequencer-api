@@ -67,4 +67,7 @@ public class BeatController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
 }
