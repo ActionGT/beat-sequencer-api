@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.garytracey.beat_sequencer.dto.LoginRequest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/auth") // Base URL for all endpoints in this controller
@@ -17,10 +22,13 @@ public class AuthenticationController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    // Add AuthenticationManager here
+    private final AuthenticationManager authenticationManager;
 
-    public AuthenticationController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthenticationController(UserRepository userRepository, PasswordEncoder passwordEncoder,AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/register")
@@ -38,5 +46,27 @@ public class AuthenticationController {
         userRepository.save(newUser);
 
         return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        try {
+            // 1. Try to authenticate
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.username(),
+                            loginRequest.password()
+                    )
+            );
+
+            // 2. If successful, set the authentication in the security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 3. Return success (We'll return a JWT token here later)
+            return ResponseEntity.ok("User logged in successfully!");
+
+        } catch (Exception e) {
+            // If authentication fails (bad username/password)
+            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        }
     }
 }

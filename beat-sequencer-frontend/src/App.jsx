@@ -9,6 +9,8 @@ import SequencerGrid from './components/SequencerGrid';
 import TransportControls from './components/TransportControls';
 import { usePlayback } from './hooks/usePlayback';
 import { useAuth } from './context/AuthContext'; // 1. Import useAuth
+import apiClient from './services/api';
+import PublicBeatPage from  './pages/PublicBeatPage'
 
 // --- (Keep constants and helper functions) ---
 const instrumentNames = ['kick', 'snare', 'hihat', 'tom'];
@@ -37,6 +39,44 @@ function App() {
 
   const handleTempoChange = (newTempo) => {
     setTempo(newTempo);
+  };
+
+  // 2. Add the handleSave function
+  const handleSave = async () => {
+    if (!currentUser) {
+      alert("Please log in to save your beat.");
+      return;
+    }
+
+    const beatName = prompt("Enter a name for your beat:");
+    if (!beatName) return; 
+
+    try {
+      // Convert the grid (a 2D array) to a JSON string
+      const patternData = JSON.stringify(grid);
+
+      // Send to backend
+      const response = await apiClient.post('/api/beats',
+        {
+          name: beatName,
+          pattern: patternData
+        },
+        // NOTE: For now, we hardcode credentials to ensure the save works
+        // while we focus on the feature. 
+        {
+          auth: {
+            username: 'myfirstuser', 
+            password: 'password123'
+          }
+        }
+      );
+      console.log('Beat saved:', response.data);
+      alert('Beat saved successfully!');
+
+    } catch (error) {
+      console.error('Failed to save beat:', error);
+      alert(`Failed to save beat. Check console for details.`);
+    }
   };
 
   return (
@@ -74,11 +114,15 @@ function App() {
               onTempoChange={handleTempoChange}
               isPlaying={isPlaying}
               onPlayPause={togglePlay}
+              onSave={handleSave}
+              setGrid={setGrid}
             />
           }
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        {/* 2. Add the Share Route */}
+  <Route path="/share/:shareId" element={<PublicBeatPage />} />
       </Routes>
     </div>
   )
