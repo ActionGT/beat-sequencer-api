@@ -20,6 +20,7 @@ const createInitialGrid = () => {
 };
 
 function App() {
+  
   // --- (Keep sequencer state and handlers) ---
   const [grid, setGrid] = useState(createInitialGrid());
   const [tempo, setTempo] = useState(120);

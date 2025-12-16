@@ -35,7 +35,7 @@ export function usePlayback(grid) {
                     }
                 });
             },
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], // An array of step indices'16n' // The timing of each step (a 16th note)
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],"16n" // An array of step indices'16n' // The timing of each step (a 16th note)
         );
 
         // Make the sequence loop forever

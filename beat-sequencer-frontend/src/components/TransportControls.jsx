@@ -19,7 +19,7 @@ function TransportControls({ isPlaying, onPlayPause, tempo, onTempoChange,onSave
 
       {/* Tempo Slider */}
       <div className={styles.tempoSliderContainer}>
-        <label htmlFor="tempo">Tempo: 120 BPM</label>
+        <label htmlFor="tempo">{tempo}</label>
         <input
           type="range"
           id="tempo"
