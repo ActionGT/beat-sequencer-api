@@ -116,6 +116,7 @@ function App() {
               onPlayPause={togglePlay}
               onSave={handleSave}
               setGrid={setGrid}
+              instrumentNames={instrumentNames}
             />
           }
         />

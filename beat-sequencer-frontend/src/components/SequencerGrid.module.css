@@ -1,5 +1,5 @@
 .gridContainer {
-  display: grid;
+  display: row;
   grid-template-columns: repeat(16, 1fr);
   /* 16 columns for 16 steps */
   gap: 5px;
