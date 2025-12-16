@@ -14,7 +14,8 @@ function HomePage({
   grid, 
   onCellClick,
   onSave,
-  setGrid 
+  setGrid,
+  instrumentNames 
 }) {
   const { currentUser } = useAuth();
   // 4. Function to handle loading
@@ -41,6 +42,7 @@ function HomePage({
       <SequencerGrid 
         grid={grid} 
         onCellClick={onCellClick} 
+        instrumentNames={instrumentNames}
       />
       {/* 5. Show MyBeats only if logged in */}
       {currentUser && (

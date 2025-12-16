@@ -67,7 +67,9 @@ function PublicBeatPage() {
             onSave={null} 
           />
           <div style={{ pointerEvents: 'none', opacity: 0.8 }}>
-            <SequencerGrid grid={grid} onCellClick={() => {}} />
+            <SequencerGrid grid={grid} onCellClick={() => {}} 
+            instrumentNames={instrumentNames}    
+                />
           </div>
         </>
       )}
